@@ -14,7 +14,7 @@ let About = () => html`
     >
         <div className=${css(styles.content)}>
             <img
-                src=${resolveAsset('/assets/react_logo.png')}
+                src=${resolveAsset('/assets/eu.jpg')}
                 className=${css(styles.image)}
             />
             <div className=${css(styles.info)}>

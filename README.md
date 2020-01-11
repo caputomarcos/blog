@@ -44,3 +44,14 @@ That's it!
 
 
 https://script.google.com/macros/s/AKfycbwCSLZvlMkPzX6GhF0sYk3JTWCpFbwAw-tAWMXPNrJw6qN2tkSc/exec
+https://script.google.com/macros/s/AKfycbwCSLZvlMkPzX6GhF0sYk3JTWCpFbwAw-tAWMXPNrJw6qN2tkSc/exec
+https://script.google.com/macros/s/AKfycbwCSLZvlMkPzX6GhF0sYk3JTWCpFbwAw-tAWMXPNrJw6qN2tkSc/exec
+https://script.google.com/macros/s/AKfycbwPbxGT-Lrt1hDdG24sfvm0PJMDsZrPJHESpLmP8PUof-fg3u0/exec
+
+curl --request POST \
+  --url https://api.sendgrid.com/v3/mail/send \
+  --header 'Authorization: Bearer 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' \
+  --header 'Content-Type: application/json' \
+  --data '{"personalizations": [{"to": [{"email": "caputo.marcos@gmail.com"}]}],"from": {"email": "dx@sendgrid.com"},"subject": "Hello, World!","content": [{"type": "text/plain", "value": "Heya!"}]}'
+
+
