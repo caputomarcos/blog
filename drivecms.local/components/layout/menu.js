@@ -60,6 +60,16 @@ class Menu extends Component {
                             About
                         <//>
                     </li>
+                                        <li className=${css(styles.item)}>
+                        <i className=${'fas fa-user ' + css(styles.icon)} />
+                        <${Link}
+                            to="/caputo"
+                            title="Caputo"
+                            className=${css(styles.itemLink)}
+                        >
+                            Caputo
+                        <//>
+                    </li>
                     <li className=${css(styles.item)}>
                         <i className=${'fas fa-paper-plane ' + css(styles.icon)} />
                         <${Link}

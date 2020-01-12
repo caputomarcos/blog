@@ -1,5 +1,6 @@
 import {html, PureComponent} from '../../react.js'
 import { StyleSheet, css } from '../../aphrodite.js'
+import resolveAsset from '../../utils/resolveAsset.js'
 
 class Sidebar extends PureComponent {
     render({
@@ -15,12 +16,18 @@ class Sidebar extends PureComponent {
         className=${css(styles.sidebar, menuVisible && styles.sidebarNarrow)}
         style=${{ backgroundImage: `url(${sidebarImage})` }}
     >
+
         <div className=${css(styles.info)}>
+                                <img
+                src=${resolveAsset('/assets/eu.jpg')}
+                className=${css(styles.image)}
+            />
             <div className=${css(styles.primary)}>
                 <h1 className=${css(styles.h1)}>${title}</h1>
                 <p className=${css(styles.p)}>${subtitle}</p>
                 <p className=${css(styles.p)}>${description}</p>
             </div>
+
             <div className=${css(styles.links, showLinks && styles.showLinks)}>
                 <a
                     className=${css(styles.button)}
@@ -46,6 +53,15 @@ class Sidebar extends PureComponent {
 export default Sidebar
 
 let styles = StyleSheet.create({
+    image: {
+        borderRadius: '50%',
+        width: '48px',
+        border: 0,
+        maxWidth: '100%',
+        verticalAlign: 'middle',
+        float: 'left',
+        marginRight: '2rem'
+    },
     sidebar: {
         justifyContent: 'flex-start',
         alignItems: 'flex-end',

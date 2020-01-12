@@ -8,6 +8,7 @@ class Drive extends Api {
         this.getDocument = this.getDocument.bind(this)
         this.getCategories = this.getCategories.bind(this)
         this.getArticleHtml = this.getArticleHtml.bind(this)
+        this.getDocumentHtml = this.getDocumentHtml.bind(this)
         this.driveExportUrl = 'https://drive.google.com/uc?export=download&id='
         this.slug = this.slug.bind(this)
         this.formatDate = this.formatDate.bind(this)
@@ -15,26 +16,51 @@ class Drive extends Api {
 
     getSpreadsheet(fileId) {
         return this.get(
-            `https://spreadsheets.google.com/feeds/list/${fileId}/default/public/values?alt=json`,
-            {
-                credentials: 'omit'
-            }
-        )
+                `https://spreadsheets.google.com/feeds/list/${fileId}/default/public/values?alt=json`, {
+                    credentials: 'omit'
+                }
+            )
             .then(response => response.json())
             .catch(error => console.log('error', error))
     }
 
     getDocument(fileId) {
         return this.get(
-            `https://docs.google.com/feeds/download/documents/export/Export?id=${fileId}&exportFormat=html`,
-            {
-                credentials: 'omit'
-            }
-        )
+                `https://docs.google.com/feeds/download/documents/export/Export?id=${fileId}&exportFormat=html`, {
+                    credentials: 'omit'
+                }
+            )
             .then(response => {
                 return response.text()
             })
             .catch(error => console.log('error', error))
+    }
+
+    getDocumentHtml(documentId) {
+        return this.getDocument(documentId).then(doc => {
+            let styleStart = '<style type="text/css">'
+            let styleEnd = '</style>'
+            let splitStyleStart = doc.split(styleStart)
+            let splitStyleEnd = splitStyleStart[1].split(styleEnd)
+
+            let htmlStart = '<body '
+            let htmlStart2 = '>'
+            let htmlEnd = '</body>'
+            let splitHtmlStart = splitStyleEnd[1].split(htmlStart)
+            let splitHtmlStart2 = splitHtmlStart[1].split(htmlStart2)
+            let htmlClass = splitHtmlStart2[0]
+            let htmlStartFull = htmlStart + htmlClass + htmlStart2
+            splitHtmlStart = splitStyleEnd[1].split(htmlStartFull)
+            let splitHtmlEnd = splitHtmlStart[1].split(htmlEnd)
+            return (
+                styleStart +
+                splitStyleEnd[0] +
+                styleEnd +
+                '<div>' +
+                splitHtmlEnd[0] +
+                '</div>'
+            )
+        })
     }
 
     getCategories() {
@@ -94,6 +120,63 @@ class Drive extends Api {
             return {
                 articles,
                 categories
+            }
+        })
+    }
+
+    getProfileInfo() {
+        return this.getSpreadsheet(conf.profileId).then(sheetData => {
+            let articles = {}
+            let positions = {}
+
+            sheetData.feed.entry
+                .map(row => ({
+                    name: row.gsx$name.$t,
+                    position: row.gsx$position.$t,
+                    photo: row.gsx$photo.$t,
+                    descriptionId: row.gsx$descriptionId.$t,
+                    photoId: row.gsx$photoId.$t,
+                    lastUpdated: row.gsx$lastupdated.$t
+                }))
+                .forEach(row => {
+                    let position = {}
+
+                    let positionId = this.slug(row.position, 'position')
+
+                    let existingPosition = Object.values(categories).find(
+                        position => position.id === positionId
+                    )
+
+                    let article = {
+                        id: row.descriptionId,
+                        name: row.name,
+                        photo: this.driveExportUrl + row.photoId,
+                        positionId,
+                        lastUpdated: row.lastUpdated,
+                        date: this.formatDate(row.lastUpdated),
+                        uri: `/articles/${row.descriptionId}/${this.slug(
+                            row.title,
+                            'article'
+                        )}`
+                    }
+
+                    if (existingPosition) {
+                        positions[positionId].articles.push(row.postId)
+                    } else {
+                        position = {
+                            id: positionId,
+                            name: row.name,
+                            photo: this.driveExportUrl + row.photoId,
+                            articles: [row.descriptionId],
+                            uri: `/positions/${positionId}`
+                        }
+                        positions[positionId] = position
+                    }
+                    articles[row.postId] = article
+                })
+            return {
+                articles,
+                positions
             }
         })
     }

@@ -4,6 +4,7 @@ import Article from './article.js'
 import Category from './category.js'
 
 import About from './about.js'
+import Caputo from './caputo.js'
 import Contact from './contact.js'
 import Home from './home.js'
 
@@ -26,6 +27,11 @@ export default [
     {
         path: '/about',
         component: About,
+        exact: true
+    },
+    {
+        path: '/caputo',
+        component: Caputo,
         exact: true
     },
     {
